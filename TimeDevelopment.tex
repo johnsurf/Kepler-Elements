@@ -1,0 +1,57 @@
+\section{Time Development of the Kepler Elements and Perturbation Theory}
+
+The State Space approach in the time domain applied to sequential filtering methods is a standard approach. Control Theory and Stochastic Estimation still make use of the State Space model -- although there are other alternative approaches currently under development in Control Theory. \\
+
+Some applications involve ordinary differential equations which might represent some sort of ``propagation'' in time or perhaps some other independent variable. These differential equations are very often non-linear in the dependent variables and normally one resorts to a linearization method so that standard State-Space methods can be employed -- although this needs to be implemented iteratively in the hopes that the initial estimates are ``good enough'' and that the 
+iteration process converges to the correct solution (if it converges at all).\\
+
+Let us apply these concepts to the OD problem. The standard State Space representation is in terms of position, velocity and time. The relevant state then incorporates position and velocity which then are envisioned as functions of the independent variable (time). 
+
+The typical State Vector, $Y(t)$, representation for the OD problem is therefore of the form 
+$$Y(t) = 
+\begin{bmatrix}
+\vec{r}(t)\\
+\vec{v}(t)\\
+\end{bmatrix}$$and then the equations of motion can be written as a first order system of differential equations for the time development in the following form:
+$$\dot Y(t) = 
+\begin{bmatrix}
+\vec{\dot r}(t)\\
+\vec{\dot v}(t)\\
+\end{bmatrix} =
+\begin{bmatrix}
+\vec{v}(t)\\
+\vec{\ddot r}(t)\\
+\end{bmatrix}
+$$
+
+At this point, one usually substitutes for $\vec{\ddot r}$ based on Newton's 2nd Law (assuming constant mass) $$\vec{F} = m\vec{\ddot r}$$where $m$ is the mass and $\vec{F}$ are the forces acting on the mass. Newton's 2nd Law can also be extended to non-inertial coordinate systems in the usual manner provided care is taken to adjust the mass terms and forces accordingly. These adjustments are standard in OD theory where the reference origin is the center of the earth
+and the position vector is given by relative position between the center of the earth and the sensor (wherever the sensor is located -- attached to the earth, or orbiting, etc.).\\
+
+Another approach to representing the State Vector associated with an orbiting trajectory is to use the classical Kepler elements in the form
+$$K(t) = [e(t), a(t), i(t), \omega(t), \Omega(t), M(t)]^T$$where $e$ is the eccentricity, $a$ is the semi-major axis, $i$ is the inclination, $\omega$ is the argument at periapsis, $\Omega$ is the longitude of the line of nodes, and $M$ is the mean anomaly and all of these elements
+are given at time $t$. In the case of the pure Kepler orbit, then these classical elements are all constant except for the mean anomaly which is a linear function of time. 
+
+To apply the state space approach to the OD estimation problem in the presence of perturbations one normally linearizes the equations of motion by expanding them about a reference orbit which is chosen to approximate the true orbit of interest closely but a the same time to have a simpler time development because the perturbations are left out of the time evolution of the reference orbit. This method goes by the name of ``chief and deputy'' where the chief is the reference 
+orbit and the deputy is the orbit of interest. One works with the relative difference between the chief and deputy. Of course, to get back to the deputy's orbit with respect to the earth, then the components of the chief are added to the deputy by vector addition. Because a pure Kepler orbit (pure $1/r^2$ gravity with no perturbations) has a simple time development, it can be used as the chief and the time development involves numerically solving Kepler's equation. Even with a numerical solution of Kepler's equation in hand, all the subsequently required derivatives present no problem due to application of the Implicit Function Theorem to Kepler's equations: $M = E - e\sin(E)$ (with E,M,e known numerically). \\
+
+Regarding the gravitational model, we will work with up-to-J6 zonal harmonics and consider the pros-and-cons of various methods of expanding the equations of motion about a Kepler orbit used as the reference as a relative origin. 
+The up-to-J6 zonal harmonics leads to a gravitational potential of the form
+\begin{align*}
+\Phi = {mu\over r}\big[ 1  &+ {J_2\over2r^2}(1-3\sin^2\delta ) \\
+                                        &+ {J_3\over2r^3}(3-5\sin^2\delta )\sin\delta\\
+                                        &+ {J_4\over8r^4}(3-30\sin^2\delta +35\sin^4\delta)\\
+                                        &+ {J_5\over8r^5}(15-70\sin^2\delta) +63\sin^4\delta)\sin\delta\\
+                                        &+ {J_6\over16r^6}(5-105\sin^2\delta +315\sin^4 - 231\sin^6\delta)\\
+                                        &+ \epsilon]\\ 
+\numberthis \label{eqnPhi}
+\end{align*}where $\mu$ is the graviational constant, $J_i$ us the coefficient of the $i$th zonal harmonic, $\epsilon$ represents terms of higher order and other missing harmonics (tesseral and sectoral).  The distance from the center of
+the earth is measured in canonical units is $r$ and $\sin\delta = z/r$ where $z$ is the respective coordinate along the North-South axis in the same units as $r$. If canonical units are not used, then replace $r$ by $r/a_e$, where $a_e$ is the equatorial radius of the earth. \\
+
+In the case of the spherical and homogenous earth, the gravitational potential is just 
+$$V = {\mu\over r}$$which gives rise to the pure Kepler orbits where the classical elements $e,a,i,\omega,\Omega$ are constants and $M$ is a linear function of time such that $M=0$ at periapsis. The mean anomaly for this case is given by 
+$M = n(t-t_p)$ and $n$ is the mean motion, $t$ is the time, and $t_p$ is the clock time at periapsis. The disturbing potential $R$ due to the gravitational perturbations beyond the purely spherical earth is defined as 
+$$R = \Phi - V$$
+
+Some approaches to approximating the equations of motion make use of binomial expansions and trigonometric series. I believe the most expedient approach is to use Taylor expansions of the full expressions so that the linear term is determined without recombining the binomial and trigonometric series into first order and second order terms. Also implicit differentiation eliminates application of similar expansions of Kepler's equation -- so why not try to work with Taylor expansions throughout since only the linear terms are kept in the expansion of the deputy's orbit relative to the chief? Another thing to note is that position and velocity states are rapidly varying and perhaps it is better to describe the trajectory in a representation that is less rapidly varying.
+On the other hand, perturbations tend to remain small in the position and velocity space representation which might have advantages over other representations where possible singularities might be present in the expansion of the equations of motion. \\
+

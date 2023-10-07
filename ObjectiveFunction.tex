@@ -1,0 +1,33 @@
+\section{Setting Up the Objective Function and Its Derivatives for the Orbit Determination Problem}
+
+Assuming we have chose a fit time $t_0$ and have an initial guess for the State Vector at $t_0$, let us use Eq.\eqref{eqnChiSq} as the function to be minimized for the purposes of performing a fit for the OD problem. The actual procedure could be by first or second order batch which can be modified to perform a sequential fit similar to a Kalman filter. As mentioned earlier the second order method requires first and second derivatives. If we specialize to the problem of fitting line-of-sight measurements to an orbit, then we have from Eq.\eqref{eqnLOS}:
+\begin{align*}
+l_{\hbox{mag}} &= \sqrt{l_x^2 + l_y^2 + l_z^2}\\
+\theta               &= \cos^{-1}(l_z/l_{\hbox{mag}})\\
+\phi                  &= \hbox{atan2}(l_y,l_x)\\
+\end{align*}where the components of the line-of-sight vector are given at the $i$th data record by
+$$\vec{l}_i = \vec{R}(t_i) - \vec{R}_i$$and $\vec{R}(t_i)$ is the predicted position vector of the object of interest at time $t_i$ and $\vec{R}_i$ is the $i$th sensor location data point measured at time $t_i$. The function to be minimized in order to perform the fit is 
+\begin{align*}\chi^2 = {1\over2}\sum_{i=1}^N\, [\theta(t_i) - \tthe_i, \phi(i_i) - \tphi_i]^T \hbox{Cov}_i^{-1}[\theta(t_i) - \tthe_i, \phi(i_i) - \tphi_i]\end{align*}
+
+
+The predicted orbit position $\vec{R}(t)$ can be determined from the osculating Kepler elements at time $t$. Symbolically we write the time-dependent Kepler elements as
+$$K(t) = [e(t), a(t), i(t), \omega(t), \Omega(t), M(t)]^t$$A pure Kepler state vector evolves in time as 
+$$\hbox{Kepler}(t) = [e_0,a_0,i_0,\omega_0,\Omega_0, M_0 + n(t-t_0)]^T$$where the elements with subscript $0$ correspond to constants defined for the chief's orbit defined at $t_0$, $n$ is
+the mean motion and $t$ is the current time. To include the effects of the perturbations of gravity we must add the particular and homogeneous solutions ${\bf Z}_p(t)$ and ${\bf Z}_h(t)$. 
+As the particular solution only depends on the chief's original classical elements we can combine $\hbox{Kepler}(t)$ with ${\bf Z}_p(t)$ to obtain an estimate of the position of the deputy in
+Kepler space at time $t$: $$K(t) = [e_0,a_0,i_0,\omega_0,\Omega_0, M_0 + n(t-t_0)]^T + {\bf Z}_p(t) + {\bf Z}_h(t)$$These expressions will involve the propagator function which comes out
+of the solution to the approximate first order differential system associated with the linear expansion of the equations of motion in the presence of gravitational perturbations. \\
+
+To proceed with the first or second order fitting methods we need to Taylor expand the vector of predictions $\alpha(t) = [\theta(t), \phi(t)]^T$ about the estimate of the differenced state vector $\bf \hat{Z}$ at $t_0$: $$\alpha^I(t_0)  \approx \alpha^I(t_0)\big|_{\hat Z} + \sum_{j=1}^3{\partial \alpha^I(t_0)\over \partial Z_j}\big|_{\hat{Z}}(Z_j - \hat{Z}_j)$$where $\alpha^I$ is the $I$th component in the measurement vector. The expansion is set up under the assumption that at the first iteration of any fitting method the chief and deputy coincide at $t_0$. This initial condition can change as the fit iterations proceed. \\
+
+By using this linear expansion of the prediction vector the objective function $\chi^2$ is converted into a quadratic form in $Z$ which has a well-defined minimum, i.e., the quadratic form is a 
+multidimensional ``bowl''. We can reach the bottom of the bowl in one Newton step. But we still need to iterate because the bowl, as it were, may change from iteration to iteration until, hopefully, the whole procedure converges. This iteration procedure is the strategy of the first order method. \\
+
+At this point the difficult part of the problem is not so much the details of the minimization equations for a quadratic form as it is organizing all the Jacobians necessary to compute the partial derivative appearing on the RHS of the linearized vector in the $\chi^2$ function. We represent these Jacobians as 
+\begin{align*}{\alpha^I(t_i) \over \partial Z^j} = \sum_{r,s,t}\, {\partial a^I(t_i)\over \partial l^r} {\partial l^r\over \partial R^s} {\partial R^s\over \partial K^t}{\partial K^t\over \partial Z^j}
+\numberthis \label{eqnJacobian}
+\end{align*}Note that the final partial derivative appearing on the far RHS is the Fundamental Matrix $\Phi(t-t_0)$ (the Propagator function for the first order system of differential equations).\\
+
+One of the nice things about the Backwards Differentiation method is that all of the Jacobians are computed directly by differentiation of the final function. Rather than compute each of the partial derivatives that appear in Eq.\eqref{eqnJacobian} we can apply the method of Backwards Differentiation to the algorithm that computes $\alpha(t)$ and obtain the derivatives on the LHS 
+directly. The method of Backwards Differentiation is described below. 
+

@@ -1,0 +1,43 @@
+\section{BFGS -- Quasi-Newton Optimization Method}
+Newton's Method for finding the minimum of the Objective Function requires computing the matrix of mixed 2nd-order partial derivatives of the Objective function -- the Hessian matrix {\bf H} whose elements are given by 
+$$ H_{jk} = {\partial^2 \chi^2\over \partial p_j \partial p_j}$$As long as the Objective Function is reasonably parabolic in the region of the minimum and that the initial guess is not too far away, this method converges quadratically. 
+However, we would like to check these two conditions and construct an alternative to investigate robustness properties.\\
+
+Let us consider the case of $N$ independent measurements each on of dimension $m$. Also we consider a list of $n$ parameters, $\theta$, to be estimated. In this case, the gradient of the Objecting Function can be written as a sum over all the measurements using the method of Backwards Differentiation as follows: 
+For each of the $N$ measurements compute the contribution of each derivative to the total and add them together
+$${\partial \chi^2\over \partial p_j} = \sum_{d=1}^N\, {\partial \chi^2_d \over \partial p_j}$$Each contributing partial derivative can be obtained using the 
+method of Backwards Differentiation: 
+\begin{align*}
+1. ~~ & \hbox{Initialize}\ F_j = 0, \hbox{for}\ i<r \hbox{ and set } F(r) = 1 \hbox{ where $r$ corresponds to the line reference for $\chi_d^2$}\\
+2. ~~& F_i = F_i + F_j (\partial h_k/\partial h_j) \hbox{ for all } i \hbox{ such that } h_j \in \Omega_k, ~~ k = r, r-1, \hdots, n+1\\
+3. ~~&\hbox{Then } \partial h_r/\partial h_i = F_i, ~i = 1,2\hdots r.\\
+4. ~~&(\nabla\chi^2)_v = \sum_{d=1}^N\, \bigg[{\partial h_r \over \partial p_v}\bigg]_d.
+\end{align*}where the final sum is over the respective elements in the measurement set. With the sum in hand we can rewind the data and use the summed gradient vector to initialize the lower part of the auxilliary work array {\bf Q} using
+
+\begin{align*}
+1.~~ & \hbox{Initialize } Q_v = (\nabla\chi^2)_v, v =1,\hdots n, \hbox{ and } Q_j = 0 \hbox{ for $  j>n$ and } S_j = 0, \forall j = 1,2, \hdots, r\\
+2.~~ & Q_k = Q_K + Q_i (\partial h_k/ \partial h_i), h \in \Omega_k; \\
+        & S_j = S_j + Q_i F_k (\partial^2 h_k/\partial h_i \partial h_j), ~ h_i, h_k \in \Omega_k, ~ k = n+1, n+2, \hdots, r\\ 
+3.~~ & S_j = S_j + S_k (\partial h_k/\partial h_i), ~h_j \in \Omega_k,~ k = r, r-1, \hdots, n+1\\
+4.~~ & \hbox{Then } \partial^2 h_r/\partial x_v \partial x_j = S_i, ~ i = 1,2,\hdots,n\\
+5.~~ &{\bf S}_i^{total} = \sum_{d=1}^N\, \big[ S_i\big]_d
+\end{align*}It is important to note that the $F$ array appearing in the above corresponds to the respective Backwards Differentiation of the respective measurement data point under considered.\\
+
+The relevance to the rank-one update version of the Broyden-Fletcher-Goldfarb-Shanno (BFGS) algorithm involves using the above construction to express the secant condition at the update for the $q$-th Newton step: 
+$$H_{q+1}*(\theta_{q+1} - \theta_q) = \nabla \chi^2(\theta_{q+1}) - \nabla \chi^2(\theta_q) $$As an alternative to this finite-difference based secant equation, we can us the following relationship between the Hessian matrix $\bf H$ and the directional derivative and the constructed vector of second derivatives $S^{total}$.
+$${\bf H \nabla} \chi^2(\theta)  = {\bf S}^{total} $$
+
+The Update Equations begin with the defintion $$H_{q+1} = H_q + uu^T$$ applied to the accumulated gradient and its second derivatives: 
+\begin{align*}
+{\bf H}_{q+1} \nabla \chi^2  &= ({\bf H}_q + {\bf uu}^T ) {\bf \nabla} \chi^2 =  {\bf S}^{total}\\
+{\bf u}({\bf u}^T {\bf \nabla} \chi^2) &= {\bf S}^{total} - {\bf H}_q{\bf \nabla} \chi^2
+\end{align*}Let $\alpha  = {\bf u}^T{\bf \nabla} \chi^2$. Then by pre-multiplying the above equation by $({\bf \nabla} \chi^2)^T$ we find that 
+$$\alpha^2  = ({\bf \nabla} \chi^2)^T {\bf u u}^T{\bf \nabla} \chi^2  = ({\bf \nabla} \chi^2)^T ({\bf S}^{total} - {\bf H}_q{\bf \nabla} \chi^2)$$ and finally we find  that $$ {\bf u} = ({\bf S}^{total} - {\bf H}_q{\bf \nabla} \chi^2) / \alpha$$
+
+Also, from the Sherman-Morrison-Woodbury formula for inverses of matrix updates we have
+$$({\bf A} + {\bf UBV}^T)^{-1} = {\bf A}^{-1} - {\bf A}^{-1}{\bf U}({\bf B}^{-1} + {\bf V}^T{\bf A}^{-1}{\bf U})^{-1}{\bf V}^T{\bf A}^{-1}$$which can be applied in this case with ${\bf A} = {\bf H}_q$, ${\bf U} = {\bf V} = {\bf u}$ and 
+${\bf B} = {\bf I}_{1x1} = 1 $ to obtain $$({\bf H} + {\bf uu}^T)^{-1} = {\bf H}_q^{-1} - {\bf H}_q^{-1}{\bf u}({\bf I} + {\bf u}^T{\bf H}_q^{-1}{\bf u})^{-1}{\bf u}^T{\bf H}_q^{-1}$$which, because ${\bf u}$ is a vector and therefore ${\bf uu}^T$ is a rank-1 update to ${\bf B}_q$, we 
+find that $${\bf B}_{q+1} = {\bf H}_{q+1}^{-1} = ({\bf H}_q + {\bf uu}^T)^{-1} = {\bf H}_q^{-1} - {{\bf H}_q^{-1}{\bf uu}^T{\bf H}_q^{-1}\over ( 1 + {\bf u}^T{\bf H}_q^{-1}{\bf u})}$$The final operation to be performed in the Newton-step is to update the parameter list via $$\theta_{q+1} = \theta_q +  {\bf B}_{q+1} {\bf \nabla} \chi^2$$.
+
+
+

@@ -1,0 +1,81 @@
+\section{Fundamental Orbit Determination}
+
+Prediction theory: 
+
+%\begin{comment}
+\begin{figure}[h]
+\setlength{\unitlength}{0.14in}              % selecting unit length 
+\centering                                             % used for centering Figure 
+\begin{picture}(32,15)                           % picture environment with the size (dimensions)
+                                                             % 32 length units wide, and 15 units high.
+\put(3,4){\framebox(6,3){$H_{B}(q)$}}
+\put(13,4){\framebox(6,3){$N[\cdot]$}} 
+\put(23,4){\framebox(6,3){$H_{C}(q)$}} 
+\put(0,5.5){\vector(1,0){3}} 
+\put(9,5.5){\vector(1,0){4}} 
+\put(19,5.5){\vector(1,0){4}}
+\put(29,5.5){\vector(1,0){3}} 
+\put(-1,6.5) {$u(k)$}\put(30,6.5) {$y(k)$} 
+\put(9.5,6.5) {$x_{B}(k)$}\put(19.5,6.5) {$x_{C}(k)$}
+\end{picture}
+\caption{An LNL Block Oriented Model Structure} % title of the Figure 
+\label{fig:lnlblock}                                                    % label to refer figure in text 
+\end{figure}                                                           
+%\end{comment}
+
+Consider estimating the parameters of a straight line $y = a + bx$. We modify the problem by using the observed data $\{y_i, x_i\}$ $i=1,\hdots,n$ and cast the problem about the mean of the data: 
+$$ y- \overline{y} = b(x - \overline{x}),$$ subject to $\overline{y} = a + b\overline{x}$ which casts the parameter $a$ in the form $a = \overline{y} -b\overline{x}$. Using the data we can obtain estimates of the parameters based on statistical concepts, i.e., $$ \sum_{i=1}^n\, (y_i - \overline{y})(x_i-\overline{x}) = b\,\sum_{i=1}^n\, (x_i - \overline{x})^2,$$ or in statistical language $\sigma_{xy} = b\,\sigma_x^2$ or $$b = {\sigma_{xy}\over \sigma_x^2}$$\\
+ 
+The general non-linear problem of Orbit Determination involves estimating parameters associated with a state motion model of the form:
+\begin{align*} \dot{\bf X} &= {\bf F}({\bf X}, t),  ~~~~~~~~~{\bf X}_k = {\bf X}(t_k) \numberthis\label{Xdot} \\
+                      {\bf Y}_i &= {\bf G}({\bf X}_i, t_i) + \epsilon_i; ~i ~~~= 1,2,\hdots l \numberthis\label{Ymeas} \end{align*}where ${\bf X}_k$ is an unknown $n$-dimensional State Vector at time $t_k$. Also ${\bf Y}_i$ is a $p$-dimensional set of measurements for 
+$i = 1,2,\hdots l,$ that are to be used to estimate the unknown value ${\bf X}_k$ which we denote by $\hat{\bf X}_k$. Finally $\epsilon_i$ represents the random measurement uncertainty which we usually assume 
+to be given by a multivariate Gaussian distribution with ${\bf Cov} = \hbox{E}[\epsilon\epsilon^T]$. In general $p < n$ and $m = p\times l \gg n$. Let ${\bf X}^*(t)$ represent the numerical integration of Eq.\eqref{Xdot} with initial conditions 
+${\bf X}^*(t_0)$. ${\bf X}^*(t)$ will be referred to as the reference State Vector -- we will implement an iterative method that numerically moves the reference State Vector so as to minimize an objective function so as to obtain the best estimate of the State Vector at time $t_0$.
+                      
+Now let us look at small changes in the State Vector about the reference State Vector and consider their effect on the prediction of the RHS of the Eq.\eqref{Ymeas}. Expanding to first order in a Taylor series about small differences in the reference State Vector
+\begin{align*}{\bf Y}_i &\approx {\bf G}({\bf X}^*\hspace{ -4pt},  t_i) + \bigg[ {\partial {\bf G}\over \partial {\bf X}} \bigg]_i^* [{\bf X}(t_i) - {\bf X}^*(t_i) ]  + \epsilon_i,\\
+                                   &= {\bf G}({\bf X}^*\hspace{ -4pt},  t_i) + \bigg[ {\partial {\bf G}\over \partial {\bf X}} \bigg]_i^* {\bf x}_i  + \epsilon_i                                   
+\end{align*}where ${\bf x}_i = {\bf X}(t_i) - {\bf X}^*(t_i)$.If we also use lower case for the difference ${\bf y}_i = {\bf Y}_i - {\bf G}({\bf X}^*\hspace{ -4pt},  t_i)$ we can rewrite the above expression as 
+\begin{align*}{\bf x}_i  &={\bf X}(t_i) - {\bf X}^*(t_i),\\
+                     {\bf y}_i &\approx  \bigg[ {\partial {\bf G}\over \partial {\bf X}} \bigg]_i^* {\bf x}_i  + \epsilon_i \end{align*}If we use numerical integration to determine the time dependence of ${\bf X}^*(t)$, then the above can be recast to use the differences in the reference State Vector at $t_0$ and a nearby State Vector ${\bf x}_0 = {\bf X}(t_0) - {\bf X}^*(t_0)$
+                     \begin{align*}{\bf x}_0   &={\bf X}(t_0) - {\bf X}^*(t_0),\\
+                     {\bf y}_i &\approx  \bigg[ {{\bf G}({\bf X}^{+\delta} , t_i)  -  {\bf G}({\bf X}^{-\delta},t_i)\over 2\vec{\bf \delta}} \bigg] {\bf x}_0  + \epsilon_i  \numberthis\label{curH}\end{align*}where ${\bf X}^{\pm \delta}$ is the numerical integration of $$\dot{\bf X} = {\bf F}({\bf X},t)$$with the initial conditions  ${\bf X}^{\pm \delta}(t_0) = {\bf X}^*(t_0) \pm \vec{\delta}$. Let ${\bf H}_i$ be defined by using finite differences of two numerical integrations of the system Eq.\eqref{Xdot}.
+                     \begin{align*}{\bf H}_i = \bigg[ {{\bf G}({\bf X}^{+\delta} , t_i)  -  {\bf G}({\bf X}^{-\delta},t_i)\over 2\vec{\bf \delta}} \bigg]\numberthis\label{curH}\end{align*} and we can summarize the model in the form
+                     \begin{align*}{\bf x}_0   &={\bf X}(t_0) - {\bf X}^*(t_0),\\
+                     {\bf y}_i &\approx  {\bf H}_i {\bf x}_0  + \epsilon_i.  \numberthis\label{System}\end{align*}If required we can also work out the time dependence of ${\bf x}(t)$ by numerical integration, {\it viz.\/}
+                     \begin{align*}{\bf x}(t)   &={\bf X}(t) - {\bf X}^*(t) \\
+                                                          &\approx \bigg[ {\partial {\bf X}(t) \over \partial {\bf X}(t_0)} \bigg] {\bf x}_0\hbox{~~for small differences} \end{align*}
+This leads for a numerical approximation for the State Transition Matrix $\Phi(t,t_0)$:
+\begin{align*} 
+{\bf x}_0   &= \delta \hbox{~~assume small deviations from the reference value}\\
+\Phi(t,t_0) &= \bigg[ {\partial {\bf X}(t) \over \partial {\bf X}(t_0)} \bigg]  \approx \bigg[ { {\bf X}^{+\delta}(t) - {\bf X}^{-\delta}(t) \over 2\delta} \bigg] \\
+{\bf x}(t) &= \Phi(t,t_0) x_0\end{align*} 
+We can also use $\Phi(t,t_0)$ to estimate propagation of the fitted Covariance of the State Vector as a function of time
+$$\overline{{\bf P}}_k = {\bf Cov}(t_k) = \Phi(t_k,t_0) * {\bf Cov}(t_0) * \Phi^T(t_k,t_0).$$  In this case we are considering the covariance of the fitted parameters and so denote them as ${\bf P}_k = {\bf Cov}(t_k)$. Similarly we can use this method for a different reference time as follows: $$\overline{{\bf P}}_k = {\bf Cov}(t_k) = \Phi(t_k,t_j) * {\bf Cov}(t_j) * \Phi^T(t_k,t_j).$$
+
+Using these definitions we can express Eq.\eqref{curH} as $$ {\bf H}_i =  \bigg[ {\partial {\bf G}({\bf X},t_i) \over \partial {\bf X}(t_i)} \bigg] \bigg[ {\partial {\bf X}(t_i) \over \partial {\bf X}(t_0)} \bigg]\hbox{~~from the chain rule} $$ 
+Let $ \tilde{\bf H}_i =  [ {\partial {\bf G}({\bf X},t_i) / \partial {\bf X}(t_i)} ]$. Then we have $ {\bf H}_i =  \tilde{\bf H}_i \Phi(t_i,t_0)$.
+
+In our application we want to estimate the parameters of the State Vector at a particular time $t_k$. In principle there is a state vector ${\bf x}_i$ corresponding to each measurement. In the above context that would imply that there are $n \times l$ State Vector components for $l$ measurements:
+\begin{align*}
+{\bf y}_1 &= \tilde{\bf H}_1 {\bf x}_1 + \epsilon_1 \\
+{\bf y}_2 &= \tilde{\bf H}_2 {\bf x}_2 + \epsilon_2 \\
+\vdots \hfill \numberthis\label{k_system}\\
+{\bf y}_l &= \tilde{\bf H}_l {\bf x}_l + \epsilon_l \\
+\end{align*}The State Vectors in Eq.\eqref{k_system} can be related to a particular State Vector at time $t_0$ by use of the State Transition Matrix $\Phi(t_k, t_0), k = 1,2, \hdots, l$:
+\begin{align*}
+{\bf y}_1 &= \tilde{\bf H}_1\Phi(t_1, t_0){\bf x}_0 + \epsilon_1 \\
+{\bf y}_2 &= \tilde{\bf H}_2\Phi(t_2, t_0) {\bf x}_0 + \epsilon_2 \\
+\vdots \hfill \numberthis\label{tzero_system}\\
+{\bf y}_l &= \tilde{\bf H}_l\Phi(t_l, t_0) {\bf x}_0 + \epsilon_l \\
+\end{align*}In terms of the matrices ${\bf H}_i$, obtained by applying finite differences to the numerical integration of Eq. \eqref{curH}, we have
+\begin{align*}
+{\bf y}_1 &= {\bf H}_1{\bf x}_0 + \epsilon_1 \\
+{\bf y}_2 &= {\bf H}_2 {\bf x}_0 + \epsilon_2 \\
+\vdots \hfill \numberthis\label{tzero_system}\\
+{\bf y}_l &= {\bf H}_l {\bf x}_0 + \epsilon_l \\
+\end{align*}We seek a sequential method for estimating the initial State Vector ${\bf x}_0$ based on adding a new measurement $k = l+1$ to the previous estimate at $k = l$. In other words, we can to add a new measurement to the estimation $${\bf x}_0 \approx \hat{{\bf x}}_{l+1} = {\bf X}(t_0)_{l+1} - {\bf X}(t_0)_l = \Delta {\bf X}(t_0)_{l+1}$$ 
+ 
+
+

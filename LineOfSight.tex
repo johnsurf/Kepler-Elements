@@ -1,0 +1,71 @@
+\section{Line of Sight Displacements}
+Using spherical polar coordinates we define a position on the unit sphere in terms of $\theta$ and $\phi$ as
+$${\bf r} = [\sin\theta \cos\phi, ~\sin\theta \sin\phi, ~\cos\theta]$$We can define two tangent vectors to the unit sphere at $[\theta, \phi]$ by taking the derivative of the position vector with respect to the coordinates $\theta$ and $\phi$. Let $\bf u$ be the tangent vector in the $\theta$ direction and $\bf v$ be the tangent vector in the $\phi$ direction. 
+By taking derivatives we have that these vectors are proportional to 
+\begin{align*}
+{\bf u} &\propto [\cos\theta \cos\phi, ~\cos\theta \sin\phi,~ -\sin\theta]\\
+{\bf v} &\propto [-\sin\theta \sin\phi, ~\sin\theta \cos\phi, ~0]
+\end{align*}
+We will define $\bf u$ and $\bf v$ to be the respective unit vectors in the above directions: 
+\begin{align*}
+{\bf u} &=  [\cos\theta \cos\phi, ~\cos\theta \sin\phi, ~-\sin\theta]\\
+{\bf v} &= [ -\sin\phi, ~\cos\phi, ~0]
+\end{align*}
+The three vectors $\{{\bf r}, {\bf u}, {\bf v} \}$ form an orthonormal set of vectors with $\bf r$ being along the line of sight and $\bf u$, $\bf v$ spanning directions in the plane perpendicular to the line of sight.
+Coordinates in the perpendicular plane represent angular differences between two line of sight vectors and there are several ways of parameterizing these angular differences. For example we can project the vector differences between two line of sight vectors along $\bf u$ and $\bf v$ by taking dot products of those vector differences with these unit vectors. 
+Alternatively we can take the dot product directly between the line of sight vectors and use polar coordinates where the radius represents the magnitude of the angular deflection. We can also use the angular differences $\Delta\theta$ and 
+$\Delta\phi$, and we can work out expressions for the projections of the line of sight vectors in terms of their components using trigonometric identities. \\
+
+Consider two line of sight vectors ${\bf l}_1$ and ${\bf l}_2$ and consider their vector difference in coordinate space:
+$${\bf \Delta l} = {\bf l}_1 - {\bf l}_2$$ If we take the dot produce with the components perpendicular to, say ${\bf l}_1$ can be expressed as 
+\begin{align*}
+{\Delta u} &=  {\bf \Delta l} \cdot {\bf u} =  ~~{\Delta l}_x\cos\theta \cos\phi + {\Delta l}_y\cos\theta \sin\phi  -{\Delta l}_z\sin\theta\\
+{\Delta v} &=  {\bf \Delta l} \cdot {\bf v} =  -{\Delta l}_x \sin\phi + {\Delta l}_y\cos\phi 
+\end{align*} This set of relations can be cast in matrix form as
+\begin{align*}
+\begin{bmatrix}
+\Delta u\\
+\Delta v\\
+\end{bmatrix} =
+\begin{bmatrix}
+\cos\theta \cos\phi & \cos\theta \sin\phi &-\sin\theta\\
+-\sin\phi & \cos\phi & 0\\
+\end{bmatrix}
+\begin{bmatrix}
+\Delta l_x\\
+\Delta l_y\\
+\Delta l_z\\
+\end{bmatrix}\numberthis \label{eqnDeltaLOS}\end{align*}
+which can be viewed as a transformation from a 3-dimensional space to a 2-dimensional space. The Jacobian of such a transformation has rank 2. 
+Another way to express $[\Delta u, \Delta v]$ is in terms of the spherical polar coordinates of ${\bf l}_1$ and ${\bf l}_2$:
+\begin{align*}
+{\bf l}_1 &= [\sin\theta_1 \cos\phi_1, ~\sin\theta_1 \sin\phi_1, ~\cos\theta_1]\\
+{\bf l}_2 &= [\sin\theta_2 \cos\phi_2, ~\sin\theta_2 \sin\phi_2, ~\cos\theta_2]
+\end{align*}Let ${\bf l}_1$ define the line of sight direction and the coordinates $u, v$ will lie in the plane defined perpendicular to ${\bf l}_1$. Form the difference vector as 
+$${\bf \Delta l} = 
+\begin{bmatrix}
+\sin\theta_1 \cos\phi_1 - \sin\theta_2 \cos\phi_2\\ 
+\sin\theta_1 \sin\phi_1 - \sin\theta_2 \sin\phi_2 \\
+\cos\theta_1 - \cos\theta_2\\
+\end{bmatrix}
+$$Taking the dot product with $\bf u$ and $\bf v$ defined in the perpendicular plane of ${\bf l}_1$ we have
+\begin{align*}
+\Delta u = {\bf \Delta l} \cdot {\bf u} &= (\sin\theta_1 \cos\phi_1 - \sin\theta_2 \cos\phi_2)\cos\theta_1\cos\phi_1\\
+                                       &~~~+ (\sin\theta_1 \sin\phi_1 - \sin\theta_2 \sin\phi_2)\cos\theta_1 \sin\phi_1\\
+                                       &~~~- (\cos\theta_1 - \cos\theta_2)\sin\theta_1\\ \\
+\Delta v = {\bf \Delta l} \cdot {\bf v} &= -(\sin\theta_1 \cos\phi_1 - \sin\theta_2\cos\phi_2)\sin\phi_1\\
+                                                      &~~~+ (\sin\theta_1 \sin\phi_1  - \sin\theta_2 \sin\phi_2)\cos\phi_1
+\end{align*}
+Using trigonometry the above relationship between $\Delta u$ and $\Delta v$ in terms of the angles defining the line of sight directions reduce to
+\begin{align*}
+{\Delta u} &=  \sin\theta_1\cos\theta_2 - \sin\theta_2\cos\theta_1\cos(\phi_1 - \phi_2)\\
+{\Delta v} &=  \sin\theta_2\sin(\phi_1 - \phi_2)
+\numberthis \label{eqnAngles}\end{align*}
+Another representation that might be useful is to normalize the $[\Delta u, \Delta v]$ displacements so that each of the variables is bounded between $-1$ and $1$. As an example we could consider:
+\begin{align*}
+{\Delta \tilde u} &=  \sin\theta_1\cos\theta_2 - \sin\theta_2\cos\theta_1\cos(\phi_1 - \phi_2)\\
+{\Delta \tilde v} &=  \sin(\phi_1 - \phi_2)
+\numberthis \label{eqnNormalizeAngles}\end{align*}In this case the displacements lie in the rectangle $-1 \le \Delta \tilde u \le 1$ and $-1 \le \Delta \tilde v \le 1$. We have several representations Eq.\eqref{eqnDeltaLOS}, Eq.\eqref{eqnAngles}, and Eq.\eqref{eqnNormalizeAngles} with which to express the displacements in the perpendicular plane with respect to ${\bf l}_1$. The first relates the (x,y,z) components of the line of sight difference vector and a transformation Jacobian to arrive at $[\Delta u, \Delta v]$. The second relates the spherical polar angles of ${\bf l}_1$ and ${\bf l}_2$ to the differences $[\Delta u, \Delta v]$ as seen in the perpendicular plane and the third is a modified version of the second such that the possible displacements cover a fixed rectangular region.\\
+
+The choice of which displacement representation to use depends on the details of the measurements and their covariance structure and how it fits in with the objective function, $\chi^2$, to be minimized in the orbit determination method.
+

@@ -1,0 +1,32 @@
+\section{Application of the first order method}
+Let us denote the prediction vector as 
+$${\alpha(t)} = 
+\begin{bmatrix}
+\theta(t) \\
+\phi(t)\\
+\end{bmatrix}\hbox{ and the measurement data vectors as  } 
+\tilde\alpha = 
+\begin{bmatrix}
+\tilde\theta\\
+\tilde\phi\\
+\end{bmatrix}$$In this case the dimension $n$ of the measurement vector is $n=2$. We expand $\alpha(t)$ about a suitably chosen expansion point (which will be iterated) in the $m$ parameters
+$Z_A$, and define $\alpha(t)|_{Z_A} \equiv \alpha_A(t)$ as the value of the predicted observation at time $t$ with respect to the current parameter set (the expansion point $A$). We also define the 
+differences $\delta\alpha(t) = \alpha(t) - \alpha_A$ and $\delta\tilde\alpha(t) = \tilde\alpha - \alpha_A$.\\
+
+The first order method involves a Taylor expansion of the prediction functions $\alpha_i(t)$ in terms of the components of the basic parameter set $\bf Z$:
+
+$$\alpha(t) \approx \alpha+A(t) + {\partial \alpha(t)\over \partial Z_k}\big|_{Z_A}\, \delta z_k$$In order to economize the notation let us define the following $n$-by-$m$ Jacobian matrix $\bf D$:
+$$D_{ik}={\partial \alpha_i(t)\over \partial Z_k}\big|_{Z_A}, \quad i=1,2,\hdots,n\quad k = 1,2,\hdots m$$
+
+Performing the differentiation of each term in the sum on the RHS of Eq.\eqref{eqnChiSq}, each of the $i=1,2\hdots,N$ measurements yields a set of equations of the form
+$${\bf D}(t_i)^T\hbox{\bf Cov}^{-1} {\bf \delta \tilde\alpha}(t_i) = {\bf D}(t_i)^T\hbox{\bf Cov}_i^{-1} {\bf D}(t_i)\delta {\bf z}$$summing over the $N$ data points we obtain the LSE equation which the increment
+$\bf \delta z$ must satisfy
+$${\bf \delta z} = \bigg[\sum_{i=1}^N {\bf D}(t_i)^T\hbox{\bf Cov}_i^{-1} {\bf D}(t_i) \bigg]^{-1} \bigg[ \sum_{i=1}^N {\bf D}(t_i)^T\hbox{\bf Cov}^{-1} {\bf \delta \tilde\alpha}(t_i) \bigg]$$
+
+At this point in the development please not that the rank of each of the terms of the form ${\bf D}(t_i)^T\hbox{\bf Cov}_i^{-1} {\bf D}(t_i)$ is at most of $\hbox{rank({\bf Cov})}$. The Jacobian terms usually
+don't lower the rank as long as the transformation they correspond to at 1-to-1. Therefore if $\hbox{rank({\bf Cov})} < \hbox{ length of } {\bf \delta z}$, then it is necessary to obtain enough data such that
+the sum over the data is full rank and the linear system has a unique solution. \\
+
+The above LSE estimate can also be sequentialized to emulate a Kalman filter method. As is usually the case, the convergence properties of iterative fitting methods such as the
+first or second order fitting methods depend on the closeness of the initial estimate of the parameters and the goodness of the assumption of linearity used in the Taylor expansion. The Angles-Only
+orbit determination method involves many transformations and opportunities to test out these assumptions.

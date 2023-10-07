@@ -1,0 +1,10 @@
+\section{Initial State Estimation}
+
+There are several classical orbit determination methods based on Angles-Only data: Laplace method of successive differentiation, Gauss's method, Escobal's Double-R Iteration method, etc. In the case of a single orbiting sensor there are severe limitations for short periods of observation due to the large number of completely different ballistic trajectories that match the Line-of-Sight data equally well. It is necessary to observe enough trajectory curvature in the orbit in order to single out the orbits which are good candidate initial states. Data from two orbiting sensors greatly improves initial state estimation.\\
+
+Let us set up a time-dependent polynomial fit for the purposes of making a good initial state orbit estimation. The following represents a linear model for the $m$-vector polynomial 
+$$Y(t) = X(t) \beta  + \epsilon.$$ The $m$-by-$n$+1 incidence matrix $X(t)$ is given by $$X(t) = [ \bf{I}~ |~ t \bf{I}~ |~ t^2 \bf{I}~|~ t^3 \bf{I}~|~ \hdots~ | t^n \bf{I} ] $$ and $I$ is the $m$-by-$m$ Identity matrix and $\epsilon$ is the uncertainty in the linear model. 
+
+
+
+

@@ -1,0 +1,73 @@
+\section{Sequential Least Squares}
+
+Consider the Generalized Least Square averaging formula applied to the Linear Model $Y = {\bf H}\beta + \epsilon$. The covariance matrix for the measurements $y$ is given by ${\bf Cov} = E(\epsilon \epsilon^T)$. 
+The Least Squares estimate for $\beta$ is given by 
+\begin{align*}\hat{\beta}_N = \big( \sum_{i=1}^N {\bf H}_i^T {\bf Cov}_i^{-1} {\bf H}_i \big)^{-1} \big( \sum_{i=1}^N {\bf H}_i^T {\bf Cov}_i^{-1} Y_i \big)\numberthis\label{beta}\end{align*}
+Let ${\bf A}_N = \big( \sum_{i=1}^{N} {\bf H}_i^T {\bf Cov}_i^{-1} {\bf H}_i  \big)^{-1}$ be the coefficient matrix on the RHS of Eq. \eqref{beta}. ${\bf A}_N$ is the estimated Covariance of $\hat{\beta}_N$. We can write 
+$\hat{\beta}_N = {\bf A}_N \big( \sum_{i=1}^N {\bf H}_i^T {\bf Cov}_i^{-1} Y_i \big).$ Now consider what happens when we add a new measurement. Using all the data again in a batch estimate we have 
+$\hat{\beta}_{N+1} = {\bf A}_{N+1} \big( \sum_{i=1}^{N+1} {\bf H}_i^T {\bf Cov}_i^{-1} Y_i \big),$ with ${\bf A}_{N+1} = \big( \sum_{i=1}^{N+1} {\bf H}_i^T {\bf Cov}_i^{-1} {\bf H}_i \big)^{-1}$
+Let us break off the last measurement $i = N+1$ and consider the separate items: 
+\begin{align*}\hat{\beta}_{N+1} = \big( \sum_{i=1}^{N} {\bf H}_i^T {\bf Cov}_i^{-1} {\bf H}_i  + {\bf H}_{N+1}^T {\bf Cov}_{N+1}^{-1} {\bf H}_{N+1}\big)^{-1}  \big( \sum_{i=1}^{N} {\bf H}_i^T {\bf Cov}_i^{-1} Y_i  + {\bf H}_{N+1}^T {\bf Cov}_{N+1}^{-1} Y_{N+1}\big)\numberthis\label{BetaN+1} \end{align*}
+Comparing the above expressions we can also express the obvious relationship between ${\bf A}_N$ and ${\bf A}_{N+1}$ as 
+$${\bf A}_{N+1}^{-1} = {\bf A}_N^{-1} + {\bf H}_{N+1}^T {\bf Cov}_{N+1}^{-1} {\bf H}_{N+1}.$$
+In terms of the above matrices we can write the previous estimate with $N$ data points: 
+$$\sum_{i=1}^N {\bf H}_i^T {\bf Cov}_i^{-1} Y_i = {\bf A}_N^{-1}\hat{\beta}_N  = \big({\bf A}_{N+1}^{-1} - {\bf H}_{N+1}^T {\bf Cov}_{N+1}^{-1} {\bf H}_{N+1} \big) \hat{\beta}_N$$ 
+
+%Sometimes the Cholesky Decomposition of the covariance matrices: ${\bf Cov}  =  {\bf L}{\bf L}^T$ can be used to re-write terms in square-form as
+%$${\bf H}^T {\bf Cov}^{-1} {\bf H} =  ({\bf L}^{-1}  {\bf H})^T ( {\bf L}^{-1} {\bf H}) $$ 
+%however we get no obvious simplification via use of Eq.\eqref{SumInverses} unless we are working with straightforward generalized least squares averaging with ${\bf H} = {\bf I}$ and can work with straightforward inverses of sums of inverses for invertible matrices {\bf A} and {\bf B}:  
+%\begin{align*} ({\bf A}^{-1} + {\bf B}^{-1}) = {\bf A}^{-1}({\bf A} + {\bf B}){\bf B}^{-1} = {\bf B}^{-1}({\bf A} + {\bf B}){\bf A}^{-1}\numberthis\label{SumInverses}\end{align*} which is symmetric in terms of the order of the matrices {\bf A} and {\bf B}.
+%Taking the inverse of both sides we find that 
+%\begin{align*}({\bf A}^{-1} + {\bf B}^{-1})^{-1} = {\bf A} ({\bf A} + {\bf B})^{-1} {\bf B}  = {\bf B} ({\bf A} + {\bf B})^{-1}{\bf A}\numberthis\label{LessInv}\end{align*} again which is symmetric in terms of the order of the matrices {\bf A} and {\bf B}.
+%Clearly the RHS of Eq. \eqref{LessInv} involves fewer inverse operations than the LHS.
+%In the case where $\bf H$ is not the Identity Matrix we need a more general result. Let  
+%$${\bf A}_{N+1}^{-1} = {\bf A}_N^{-1} + {\bf UB^{-1}V}^T$$
+The Sherman-Morrison-Woodbury formula for inverses takes the form;
+\begin{align*}({\bf A}_N^{-1} + {\bf UB^{-1}V}^T)^{-1} = {\bf A}_N - {\bf A}_N{\bf U}({\bf B} + {\bf V}^T{\bf A}_N{\bf U})^{-1}{\bf V}^T{\bf A}_N\numberthis\label{Woodbury}\end{align*}Let ${\bf A}_{N}$ be defined as above, ${\bf B} = {\bf Cov}_{N+1}$,  ${\bf U} = {\bf H}_{N+1}^T$ and ${\bf V}^T = {\bf H}_{N+1}$. Inserting these expressions and using Eq. \eqref{Woodbury} into the first term on the RHS of Eq.\eqref{BetaN+1} we obtain the update to the fitted Covariance Matrix: 
+\begin{align*}{\bf A}_{N+1} &= \big( \sum_{i=1}^{N} {\bf H}_i^T {\bf Cov}_i^{-1} {\bf H}_i  + {\bf H}_{N+1}^T {\bf Cov}_{N+1}^{-1} {\bf H}_{N+1}\big)^{-1} \\
+                                           &= {\bf A}_N - {\bf A}_N{\bf H}_{N+1}^T({\bf Cov}_{N+1} + {\bf H}_{N+1}{\bf A}_N{\bf H}_{N+1}^T)^{-1}{\bf H}_{N+1}{\bf A}_N\numberthis\label{CovUpdate}\end{align*}We also obtain the update to the fitted parameter state:
+\begin{align*}\hat{\beta}_{N+1} &= {\bf A}_{N+1} \big( \sum_{i=1}^{N} {\bf H}_i^T {\bf Cov}_i^{-1} Y_i  + {\bf H}_{N+1}^T {\bf Cov}_{N+1}^{-1} Y_{N+1}\big)\\
+                                                 &= {\bf A}_{N+1} \big[\big({\bf A}_{N+1}^{-1} - {\bf H}_{N+1}^T {\bf Cov}_{N+1}^{-1} {\bf H}_{N+1} \big) \hat{\beta}_N + {\bf H}_{N+1}^T {\bf Cov}_{N+1}^{-1} Y_{N+1}\big]\\
+                                                 &= \hat{\beta}_N + {\bf A}_{N+1}{\bf H}_{N+1}^T {\bf Cov}_{N+1}^{-1}  \big( Y_{N+1} -  {\bf H}_{N+1} \hat{\beta}_N \big)\end{align*}Using Eq.\eqref{CovUpdate} we also can express
+\begin{align*} {\bf A}_{N+1}{\bf H}_{N+1}^T &= \big[{\bf A}_N - {\bf A}_N{\bf H}_{N+1}^T({\bf Cov}_{N+1} + {\bf H}_{N+1}{\bf A}_N{\bf H}_{N+1}^T)^{-1}{\bf H}_{N+1}{\bf A}_N\big] {\bf H}_{N+1}^T\\
+                                                                    &= {\bf A}_N{\bf H}_{N+1}^T \big[ \bf{I}_N - ({\bf Cov}_{N+1} + {\bf H}_{N+1}{\bf A}_N{\bf H}_{N+1}^T)^{-1}{\bf H}_{N+1}{\bf A}_N {\bf H}_{N+1}^T\big]\\
+                                                                    &= {\bf A}_N{\bf H}_{N+1}^T ({\bf Cov}_{N+1} + {\bf H}_{N+1}{\bf A}_N{\bf H}_{N+1}^T)^{-1}\big[ ({\bf Cov}_{N+1} + {\bf H}_{N+1}{\bf A}_N{\bf H}_{N+1}^T) -  {\bf H}_{N+1}{\bf A}_N {\bf H}_{N+1}^T\big]\\
+                                                                    &= {\bf A}_N{\bf H}_{N+1}^T ({\bf Cov}_{N+1} + {\bf H}_{N+1}{\bf A}_N{\bf H}_{N+1}^T)^{-1}{\bf Cov}_{N+1}
+                                                                    \end{align*}
+If we define a Gain Matrix as follows, ${\bf K}_{N+1} = {\bf A}_{N+1} {\bf H}^T_{N+1}{\bf Cov}^{-1}_{N+1}= {\bf A}_N{\bf H}_{N+1}^T({\bf Cov}_{N+1} + {\bf H}_{N+1}{\bf A}_N{\bf H}_{N+1}^T)^{-1},$ we can also write the update formulae as: $${\bf A}_{N+1} =  \big[ {\bf I}_N - {\bf K}_{N+1}{\bf H}_{N+1}\big]{\bf A}_N  \quad\hbox{and}\quad  \hat{\bf \beta}_{N+1} = \hat{\beta}_N + {\bf K}_{N+1}  \big( Y_{N+1} -  {\bf H}_{N+1} \hat{\beta}_N \big).$$
+
+%Let us check out what happens in the case where ${\bf U} = {\bf V}^T = {\bf I}$. The Cholesky Decomposition of the covariance matrices: ${\bf Cov}  =  {\bf L}{\bf L}^T$ can be used to re-write terms in square-form as
+%$${\bf X}^T {\bf Cov}^{-1} {\bf X} =  ({\bf L}^{-1}  {\bf X})^T ( {\bf L}^{-1} {\bf X}) $$
+ 
+%Let us explore an alternative formulation which is applicable in the case where the ${\bf X}_i$'s  are invertible matrices. As we will show below this case would apply when the number of parameters are the same as the number of measurements and the transformation from parameter space to measurement space, represented by $Y = {\bf X}\beta$, is one-to-one and onto. Consider the following Matrix Identity  
+%\begin{align*}{\bf R}^{-1} + {\bf S}^{-1} &= {\bf R}^{-1}( {\bf R} +  {\bf S} ){\bf S}^{-1}  =  {\bf S}^{-1}( {\bf R} +  {\bf S} ){\bf R}^{-1} \\
+% [ {\bf R}^{-1} + {\bf S}^{-1} ]^{-1} &= {\bf S} ( {\bf R} +  {\bf S} )^{-1}{\bf R} = {\bf R}( {\bf R} +  {\bf S} )^{-1}{\bf S} \hbox{~~ by symmetry} \end{align*}
+%Using the above formulation for this special case, and letting  ${\bf R} = {\bf A}_N = \big( \sum_{i=1}^{N} {\bf X}_i^T {\bf Cov}_i^{-1} {\bf X}_i  \big)^{-1}$,\\ ${\bf S} = \big({\bf X}_{N+1}^T {\bf Cov}_{N+1}^{-1} {\bf X}_{N+1}  \big)^{-1}$ and $\hat{\beta}_{N+1} = {\bf A}_{N+1} \big( \sum_{i=1}^{N+1} {\bf X}_i^T {\bf Cov}_i^{-1} Y_i \big)$, 
+%we can write 
+%\begin{align*} 
+%{\bf A}_{N+1} & = \big( \sum_{i=1}^{N+1} {\bf X}_i^T {\bf Cov}_i^{-1} {\bf X}_i  \big)^{-1} \hbox{~~by definition}\\
+%                     &= {\bf A}_N \big( {\bf A}_N + {\bf X}_{N+1}^{-1}{\bf Cov}_{N+1}({\bf X}_{N+1}^T)^{-1}\big)^{-1} {\bf X}_{N+1}^{-1}{\bf Cov}_{N+1} ({\bf X}_{N+1}^T)^{-1} \hbox{~~using the above Identity}\\
+%                     &= {\bf X}_{N+1}^{-1}{\bf Cov}_{N+1} ({\bf X}_{N+1}^T)^{-1} \big( {\bf A}_N + {\bf X}_{N+1}^{-1}{\bf Cov}_{N+1}({\bf X}_{N+1}^T)^{-1}\big)^{-1}  {\bf A}_N \hbox{~~alternate form true by symmetry}\\
+%\hat{\beta}_{N+1} &= {\bf A}_{N+1} \big( \sum_{i=1}^{N+1} {\bf X}_i^T {\bf Cov}_i^{-1} Y_i \big) \hbox{~~by definition}
+%\end{align*}\vskip -5mm
+%\begin{align*}\hat{\beta}_{N+1} &= \big( \sum_{i=1}^{N} {\bf X}_i^T {\bf Cov}_i^{-1} {\bf X}_i  + {\bf X}_{N+1}^T {\bf Cov}_{N+1}^{-1} {\bf X}_{N+1}\big)^{-1}  \big( \sum_{i=1}^{N} {\bf X}_i^T {\bf Cov}_i^{-1} Y_i  + {\bf X}_{N+1}^T {\bf Cov}_{N+1}^{-1} Y_{N+1}\big)\hbox{~~by definition} \\
+%& = {\bf X}_{N+1}^{-1}{\bf Cov_{N+1}} ({\bf X}_{N+1}^T)^{-1} \big( {\bf A}_N + {\bf X}_{N+1}^{-1}{\bf Cov}_{N+1}({\bf X}_{N+1}^T)^{-1}\big)^{-1}{\bf A}_N  \sum_{i=1}^{N} {\bf X}_i^T {\bf Cov}_i^{-1} Y_i  \hbox{~~separating the terms}\\
+%&+{\bf A}_N \big( {\bf A}_N + {\bf X}_{N+1}^{-1}{\bf Cov}_{N+1}({\bf X}_{N+1}^T)^{-1}\big)^{-1} {\bf X}_{N+1}^{-1}{\bf Cov}_{N+1} ({\bf X}_{N+1}^T)^{-1}{\bf X}_{N+1}^T {\bf Cov}_{N+1}^{-1} Y_{N+1} \hbox{~~and using symmetry}
+% \end{align*}\vskip -5mm
+%\begin{align*}\hat{\beta}_{N+1} & = {\bf X}_{N+1}^{-1}{\bf Cov_{N+1}} ({\bf X}_{N+1}^T)^{-1} \big( {\bf A}_N + {\bf X}_{N+1}^{-1}{\bf Cov}_{N+1}({\bf X}_{N+1}^T)^{-1}\big)^{-1}\hat{\beta}_N  \\
+%&+{\bf A}_N \big( {\bf A}_N + {\bf X}_{N+1}^{-1}{\bf Cov}_{N+1}({\bf X}_{N+1}^T)^{-1}\big)^{-1} {\bf X}_{N+1}^{-1} Y_{N+1}
+% \end{align*}Adding and subtracting a term of the form: ${\bf A}_N \big( {\bf A}_N + {\bf X}_{N+1}^{-1}{\bf Cov}_{N+1}({\bf X}_{N+1}^T)^{-1}\big)^{-1} \hat{\beta}_{N}$ we have\begin{align*}\hat{\beta}_{N+1} & = \big( {\bf A}_N + {\bf X}_{N+1}^{-1}{\bf Cov_{N+1}}({\bf X}_{N+1}^T)^{-1} \big) \big( {\bf A}_N + {\bf X}_{N+1}^{-1}{\bf Cov}_{N+1}({\bf X}_{N+1}^T)^{-1}\big)^{-1}\hat{\beta}_N  \\
+%&-{\bf A}_N \big( {\bf A}_N + {\bf X}_{N+1}^{-1}{\bf Cov}_{N+1}({\bf X}_{N+1}^T)^{-1}\big)^{-1} \hat{\beta}_{N}\\
+%&+{\bf A}_N \big( {\bf A}_N + {\bf X}_{N+1}^{-1}{\bf Cov}_{N+1}({\bf X}_{N+1}^T)^{-1}\big)^{-1} {\bf X}_{N+1}^{-1} Y_{N+1}
+% \end{align*}which we can combine with the new measurement $Y_{N+1}$
+%\begin{align*}\hat{\beta}_{N+1} = \hat{\beta}_N  +{\bf A}_N \big( {\bf A}_N + {\bf X}_{N+1}^{-1}{\bf Cov}_{N+1}({\bf X}_{N+1}^T)^{-1}\big)^{-1} {\bf X}_{N+1}^{-1} \big[Y_{N+1} -  {\bf X}_{N+1} \hat{\beta}_N\big]
+%\end{align*}This formulation suggests that a second form for Gain Matrix in the case of invertible ${\bf X}$ matrices be defined as 
+%\begin{align*}{\bf K}_{N+1} &= {\bf A}_N \big( {\bf A}_N + {\bf X}_{N+1}^{-1}{\bf Cov}_{N+1}({\bf X}_{N+1}^T)^{-1}\big)^{-1} {\bf X}_{N+1}^{-1}, \hbox{~and using}\\
+%\big( {\bf A}_N + {\bf X}_{N+1}^{-1}{\bf Cov}_{N+1}({\bf X}_{N+1}^T)^{-1}\big) &= {\bf X}_{N+1}^{-1}\big({\bf X}_{N+1}{\bf A}_N {\bf X}^T_{N+1} + {\bf Cov}_{N+1}\big)({\bf X}_{N+1}^T)^{-1}\hbox{~we also arrive at}\\
+%{\bf K}_{N+1} &= {\bf A}_N {\bf X}_{N+1}^T\big({\bf X}_{N+1}{\bf A}_N {\bf X}^T_{N+1} + {\bf Cov}_{N+1}\big)^{-1}
+%\end{align*}Using this expression we can now write
+%\begin{align*}\hat{\beta}_{N+1} &= \hat{\beta}_N  + {\bf K}_{N+1} \big[Y_{N+1} -  {\bf X}_{N+1} \hat{\beta}_N\big] \hbox{~~with Updated Covariance given by } \\
+%{\bf A}_{N+1} &= {\bf A}_N {\bf X}_{N+1}^T\big({\bf X}_{N+1}{\bf A}_N {\bf X}^T_{N+1} + {\bf Cov}_{N+1}\big)^{-1}{\bf Cov}_{N+1} ({\bf X}_{N+1}^T)^{-1}\\
+%                     &= {\bf K}_{N+1}{\bf Cov}_{N+1} ({\bf X}_{N+1}^T)^{-1}\\
+%                     &=  \big[ {\bf I}_N - {\bf K}_{N+1}{\bf X}_{N+1}\big]{\bf A}_N                      
+%                     \end{align*}

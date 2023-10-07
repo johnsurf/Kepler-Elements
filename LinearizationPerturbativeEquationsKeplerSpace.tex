@@ -1,0 +1,96 @@
+\section{Linearization of the Perturbed Equations of Motion in Kepler Space}
+
+Canonical perturbation theory in the context of Hamiltonian mechanics proceeds via canonical transformations where Hamilton's equations of motion are invariant. 
+This approach to perturbation theory which has been worked out for the rate of change of the Kepler elements in the presence of gravitational perturbations is
+given by the Lagrange Planetary Equations which will will consider. One thing to bear in mind regarding this approach to perturbation theory is that there are numerical problems as $e\rightarrow 0$ or $\sin(i) \rightarrow 0$.\\
+
+Let us take our reference orbit (the chief) to be a the trajectory of an object around a spherical earth whose Kepler elements are designated by
+$[e_K,\alpha_K,I_K,\omega_K,\Omega_K,M_K[$ and we set these equal to the Kepler elements of the deputy at time $t = t_0$. In this case the time rate of change (equations of motion)
+for the chief around a spherical earth are given by 
+\begin{align*}
+{de_K\over dt}  &= 0\\
+{da_K\over dt}  &= 0\\
+{di_K\over dt}  &= 0\\
+{d\omega_K\over dt}  &= 0\\
+{d\Omega_K\over dt}  &= 0\\
+{dM_K\over dt} &= n\\
+\end{align*}N.B. the $n$ in the reference orbit is the same $n$ appearing in the deputy's orbit at $t=t_0$. \\
+
+Now moving on to the method of linearization as applied to a trajectory described by Kepler elements in the presence of gravitational perturbations we form the differenced state vector
+\begin{align*}
+\te &= e - e_K\\
+\ta &= a - a_K\\
+\ti  &=  i - i_K\\
+\tw &= \omega - \omega_K\\
+\tW &= \Omega - \Omega_K\\
+\tM &= M - M_K\\
+\end{align*}\\
+
+The Lagrange Planetary Equations in terms of the classical elements take the form: 
+\begin{align*}
+{de\over dt} &= {1 - e^2\over na^2e}{\partial R\over \partial M} -{\sqrt{1-e^2}\over na^2e}{\partial R\over \partial \omega}\\
+{da\over dt} &= {2\over na}{\partial R\over \partial M}\\
+{di\over dt}  &=  {\cos i\over na^2\sqrt{1-e^2}\, \sin i}{\partial R\over \partial \omega} -{1\over na^2\sqrt{1-e^2}\, \sin i}{\partial R\over \partial \Omega}\\
+{d\omega\over dt} &= {\sqrt{1-e^2}\over na^2e}{\partial R\over \partial e} -{\cos i\over na^2\sqrt{1-e^2}\, \sin i}{\partial R\over \partial i} \\
+{d\Omega\over dt} &= {1\over na^2\sqrt{1-e^2}\, \sin i}{\partial R\over \partial i}\\
+{dM\over dt}  &= n - {1 - e^2\over na^2e}{\partial R\over \partial e} - {2\over na}{\partial R\over \partial a}\\
+\numberthis \label{eqnLagrange}\end{align*}Observe the terms involving $\sqrt{1-e^2}$ which become imaginary if $e>1$ as well as the denominators which vanish as $e\rightarrow0$ and $\sin i \rightarrow0$. We clearly need to be mindful of these possibilities in any numerical work which searches the parameter space to minimize our objective function. If the minimum lies outside of the physical boundaries for elliptical orbits, then we have to accommodate the possibility that the true orbit is hyperbolic or parabolic. For the moment we will develop the algorithm under the assumption that the conic sections involved are approximately elliptical trajectories. 
+
+We can express the RHS of Eq.\eqref{eqnLagrange} using matrices. Let us define the following matrices: 
+$${\bf K} = \big[e, a, i, \omega, \Omega, M \big]^T$$
+$${\bf n} = [0, 0, 0, 0, 0, n]^T$$
+$${\bf M} = 
+\begin{bmatrix}
+0 & 0 & 0 & -{\sqrt{1-e^2}\over na^2e} & 0 &{1 - e^2\over na^2e}\\ 
+0 & 0 & 0 & 0 & 0 & {2\over na}\\
+0 & 0 & 0 & {\cos i\over na^2\sqrt{1-e^2}\, \sin i} & -{1\over na^2\sqrt{1-e^2}\, \sin i}\\
+{\sqrt{1-e^2}\over na^2e} & 0 & -{\cos i\over na^2\sqrt{1-e^2}\, \sin i} & 0 & 0 & 0\\
+0 & 0 & {1\over na^2\sqrt{1-e^2}\, \sin i} & 0 & 0 & 0\\
+-{1 - e^2\over na^2e} & -{2\over na} & 0 & 0 & 0 & 0\\
+\end{bmatrix},$$
+$${\bf D} = \bigg[ {\partial R\over\partial e}, {\partial R\over\partial a}, {\partial R\over\partial i}, 
+{\partial R\over\partial \omega}, {\partial R\over\partial \Omega}, {\partial R\over\partial M} \bigg]^T$$
+Notice that the matrix $\bf M$ is anti-symmetric and therefore has imaginary eigenvalues -- one possible consequence of this anti-symmetry it associated contributions to 
+periodic effects in the time dependence of the solution. 
+With these matrices defined as above, Lagrange's Planetary Equations can be written in terms of the following first order differential system of equations: 
+$${\dot{\bf K}} = {\bf n} + {\bf M D}$$
+We now proceed to linearize this system of equations along the lines that we used with the perturbation equations of motion in position and velocity space: 
+\begin{align*}{\bf \dot K} \approx ({\bf n} + {\bf M D})_{\bf \hat{Z}} + \sum_{j=1}^m\,\bigg[ {\partial ({\bf n} + {\bf M D})\over \partial Z^j} \bigg]_{\bf \hat{Z}} (Z^j - {\hat Z}^j)
+\numberthis \label{eqnKeplerExpanded}\end{align*}
+The expansion point in Eq.\eqref{eqnKeplerExpanded} represents the chief's parameterization denoted by ${\bf K}_C$ with components ${\hat{Z}}^j$. Subtracting the chief's equation of motion 
+$$\bf{\dot K}_C = {\bf n}$$ from both sides. $${\bf K}^j  - {\bf K}^j_C = Z^j - {\hat Z}^j \equiv z^j$$We have the following differential equation for $z^j$:
+\begin{align*}{\bf \dot z} \approx ({\bf M D})_{\bf \hat{Z}} + \sum_{j=1}^m\,\bigg[ {\partial ({\bf n} + {\bf M D})\over \partial Z^j} \bigg]_{\bf \hat{Z}} z^j\end{align*}In matrix notation we can express
+this differential equation as
+\begin{align*}{\bf \dot z} \approx ({\bf M D})_{\bf \hat{Z}} + \bigg[ {\partial  ({\bf n} + {\bf M D}) \over \partial {\bf Z}}\bigg]_{\bf \hat{Z}} {\bf z}
+\numberthis \label{KeplerLinearized}\end{align*}We can classify Eq.\eqref{KeplerLinearized} as a first order system of differential equations with both an Inhomogeneous term as well as
+a Homogeneous term. Note that the inhomogenaity arises because the first term on the RHS of Eq.\eqref{KeplerLinearized} contains the gravitational perturbations evaluated along the
+reference trajectory of the chief. This term is a 6-by-1 column vector. The reference trajectory itself moves along a pure Kepler orbit and the location of the chief serves as a moving 
+``origin'' in this problem which is used to define the relative coordinates of the deputy. The Inhomogeneous term captures the contribution of the disturbing potential as seen at the location of the
+reference orbit.\\
+
+Expanding out the terms appearing in Eq.\eqref{KeplerLinearized} we have: 
+\begin{align*}{\bf \dot z} \approx ({\bf M D})_{\bf \hat{Z}} + \bigg[ {\partial  {\bf n} \over \partial {\bf Z}}   + {\partial  {\bf M}\over \partial {\bf Z}}{\bf D} + 
+{\bf M} {\partial {\bf D} \over \partial {\bf Z}} \bigg]_{\bf \hat{Z}} {\bf z}
+\numberthis \label{KeplerExpanded}\end{align*}
+
+
+Recall that for a general matrix produce of the form ${\bf B} = {\bf C D}$, that the columns of $\bf B$ are linear combinations of the columns of $\bf C$ with coefficients from the columns
+of $\bf D$. In terms of the components of $\bf z$: $$({\partial  {\bf M}\over \partial {\bf Z}} {\bf D})\,  {\bf z} = \sum_j\, ({\partial {\bf M}\over \partial Z^j} {\bf D}) z^j$$
+The 1st matrix on the RHS ${\partial {\bf n}/ \partial Z}$ is a 6-by-6 matrix all of whose elements are zero except the last row which is given by
+$$\bigg[ {\partial n\over \partial Z^1} ~ \bigg| ~{\partial n\over \partial Z^2} ~ \bigg| ~{\partial n\over \partial Z^3} ~ \bigg| ~{\partial n\over \partial Z^4} ~ \bigg| ~{\partial n\over \partial Z^5} ~ \bigg| ~{\partial n\over \partial Z^6} \bigg]$$
+Using the fact that the columns
+of a product of two matrices are linear combinations of the columns of the first matrix with coefficients from the columns of the second matrix, we deduce that the $j$th column of the 
+middle matrix which multiplies $\bf z$ are given by: 
+$$C_j = \bigg[{\partial {\bf M}\over \partial Z^j} {\bf D}\bigg]$$Therefore we can assemble the product matrix column-by-column in the form
+$${\bf C} = \bigg[{\partial {\bf M}\over \partial Z^1} {\bf D} ~\bigg| ~{\partial {\bf M}\over \partial Z^2} {\bf D} ~\bigg|~ {\partial {\bf M}\over \partial Z^3} {\bf D} \bigg|~ 
+                           {\partial {\bf M}\over \partial Z^4} {\bf D} ~\bigg|~ {\partial {\bf M}\over \partial Z^5} {\bf D} ~\bigg|~{\partial {\bf M}\over \partial Z^6} {\bf D} \bigg]$$
+The third matrix on the RHS involves the 6-by-6 matrix ${\bf M} {\partial {\bf D}\over\partial {\bf Z}}$ evaluated at the chief's elements. Now $\bf D$ is already the derivative of the disturbing potential $R$ with respect to $\bf Z$, we have that the derivatives of $\bf D$ with repsect to $\bf Z$ is the Hessian matrix for $R$, which we denote by $\bf H$. Therefore we have 
+$${\bf M}{\partial {\bf D}\over \partial {\bf Z}} =  {\bf M H}$$
+                           
+Putting everything together we can write the equations of motion for the linearized Kepler elements with respect to the chief as 
+\begin{align*}{\bf \dot z} \approx ({\bf M D})_{\bf \hat{Z}} + \bigg[ {\partial  {\bf n} \over \partial {\bf Z}}   + {\bf C}  + {\bf M H} \bigg]_{\bf \hat{Z}} {\bf z}\end{align*}
+
+ 
+
+
+

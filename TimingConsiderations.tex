@@ -1,0 +1,35 @@
+\section{Time Considerations}
+Consider the case we we are evaluating a vector-valued function $\partial {\bf f}(h_1,h_2,\hdots,h_r)/\partial {\bf x}$ where $\hbox{dim}({\bf f}) = m$ and $\hbox{dim}({\bf x}) = n$. Let $\Psi$ equal the computational work need to evaluate $h_1, h_2, \hdots, h_r$.\\
+
+Then forward differentiation requires and amount of computational work $\propto \Psi$ for each first and second derivative (assuming $m=1$): $n$ first derivatives use $o(n\Psi)$ and $n^2\Psi$ amount of 
+work respectively. Nevertheless forward differentiation is preferred if $m$ is large and $n$ is small.\\
+
+Backwards differentiation is preferred when $n$ is large and $m$ is small. Evaluating all $n$ first derivatives uses only work $\propto \Psi$ (assuming $m=1$). All $n^2/2$ second derivatives uses work 
+$\propto n\Psi$.
+
+%%%%  Example of Tabular Mode for Backwards Differentiaiton
+%\vspace{0.25truein}
+%First derivatives, $\partial F({\bf L}) / \partial x_v$, are summarized in the following table
+
+%\begin{tabular}{l}
+%Initializations:\\
+%$\bf L$ is provided (see Table 1).\\
+%{${\bf F}_{N \times N}$ is a work space with elements $F_{ij}$, defined respectively for $i \ge j$.}\\
+%$\ominus_k =$ ``$+$'' if $k$-th diagonal is part of non-negative submatrix, ``$-$'' otherwise.\\
+%$\pm_k = -\ominus_k$.\\
+%$F_{ij} \leftarrow \partial F({\bf L})/\partial L_{ij}$\\
+%\hline\\
+%Algorithm:\\
+%(a) ${\bf F} \leftarrow T({\bf F})$ by following operations:\\
+%For $ k = N, ..., 1$ (N.B. Decreasing Order) do\\
+%if $|L_{kk}| > \rm zero$, then do:\\
+%$F_{ik} \leftarrow F_{ik} \pm_k (F_{ij} \times L_{jk})$, $F_{jk} \leftarrow F_{jk}  \pm_k (F_{ij} \times L_{ik})$, for  $j = k+1, ...,N$ \& $i = j, ..., N$\\
+%$F_{jk} \leftarrow \ominus_k F_{jk}/L_{kk}$,  $F_{kk} \leftarrow F_{kk} \pm_k (F_{jk} \times L_{jk})$, for  $j = k+1, ...,N$\\
+%$F_{kk} \leftarrow \ominus_k (1/2) F_{kk}/L_{kk}$\\
+%end $k$\\
+%\\
+%\textcolor{red}{(b)   $\partial F({\bf L})/\partial x_v = \sum_{i \ge j} F_{ij}\times \partial K_{ij}/\partial x_v, \quad v = 1, 2, ... p.$}\\
+%\\
+%\hline\\
+%Table 2. Pseudocode for Backward Differentiation of $F({\bf L})$.\\
+%\end{tabular}

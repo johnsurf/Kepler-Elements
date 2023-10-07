@@ -1,0 +1,54 @@
+\section{Initialization of Orbit Determination}
+The fitting methods described above require a good initial guess of the orbit and, because the prediction functions involved are non-linear in terms of the underlying parameters, proceed by iteration beginning with the initial guess. 
+
+There are several classical orbit determination methods based on Angles-Only data: Laplace method of successive differentiation, Gauss's method, Escobal's Double-R Iteration method, etc. In the case of a single orbiting sensor there are severe limitations for short periods of observation due to the large number of completely different ballistic trajectories that match the Line-of-Sight data very closely. It is necessary to observe enough trajectory curvature in the orbit in order to single out the orbits which are good candidate initial states. Data from two orbiting sensors greatly improves initial state estimation.\\
+
+Let us set up a time-dependent polynomial fit for the purposes of making a good initial state orbit estimation. The following represents a linear model for the $m$-vector polynomial 
+$$Y(t) = X(t) \beta  + \epsilon.$$ The $m$-by-$n$+1 incidence matrix $X(t)$ is given by $$X(t) = [ \bf{I}~ |~ t \bf{I}~ |~ t^2 \bf{I}~|~ t^3 \bf{I}~|~ \hdots~ | t^n \bf{I} ] $$ and $I$ is the $m$-by-$m$ Identity matrix and $\epsilon$ is the uncertainty in the linear model. 
+
+This method can be extended in a manner tailored for line of sight data and satisfy Newton's 2nd law. Because line of sight measurements are two dimensional the difference between the observed and predicted line of sight unit vectors needs to be projected into the perpendicular plane in order to compare with the estimated measurement error. Gravitation, at least up to $1/r^2$ contributions can be used as a constraint via Lagrange multipliers. In principal it is probably immaterial whether one minimizes the projected spatial vector difference or actually the projected unit-vector difference, since the minimums are closely related except for scaling and the purpose is just to estimate the initial state. As an example the spatial difference between the polynomial at time $t$ and the sensor measurement location $S$ and line of sight measured unit vector $\vec{u}$ is given by the difference between the polynomial and the closest position on the ray extending from the sensor towards the polynomial along the line of sight, i.e., $S - u^T(S-Y)$ or
+$$\vec{r} = S - u^T(S-Y(t)) - Y(t) = (I - u^T)(S-Y(t))$$ and a $\chi^2$ can be constructed for this problem as follows
+
+$$\chi^2 = \sum_{i=1}^N\, [S_i - Y(t_i)]^T [1-u_i^T]^T [I-u_i^T][S_i - Y(t_i)]  + \lambda^T[\ddot{Y(t_i)} + \mu {Y(t_i)\over |Y|^3}],$$
+
+Since the line of sight data is 2-d the $[I-u^T]$ matrix can be replaced by a $3$-x-$2$ projection matrix that take 3-vectors and projects them into the plane perpendicular to the line of sight measurement. Both
+
+$${\bf M}_{UV}(i) =
+\begin{bmatrix}
+\cos\theta_i\cos\phi_i & \cos\theta_i\sin\phi_i & -\sin\theta_i \\
+-\sin\phi_i & \cos\phi_i & 0\\
+\end{bmatrix}
+$$
+
+Now ${\bf M}_{UV}$ and $[I - u^T]$ are both rank-2 projection matrices which project spatial differences into the plane perpendicular to the line-of-sight direction and satisfy the following relationship: 
+$${\bf M}_{UV} {\bf M}^T_{UV} = [I - u^T][I-u^T]^T$$Also the covariance matrix for the line-of-sight measurements are conformable with ${\bf M}_{UV}$ and we can insert them also into the objective function in place of $[I-u^T]$ as follows:
+$$\tilde{\chi}^2 = \sum_{i=1}^N\, [S_i - Y(t_i)]^T {\bf M}^T_{UV}{\bf Cov}^{-1}_{UV} {\bf M}_{UV} [S_i - Y(t_i)]  + \lambda^T\big[\ddot{Y}(t_i) + \mu {Y(t_i)\over |Y|^3}\big],$$ which differs from the usual expression in that the displacements are not necessary with respect to unit vector line-of-sight displacements on the unit sphere. In practice that is somewhat immaterial to the minimization scheme and can always be put back in to calculate the fitted covariance of the $\beta$ parameters. 
+
+We include here a description of Laplace's method of orbit determination which can be found in many books\cite{Bate} and papers \cite{Bell}. Laplace's technique requires a polynomial approximation to a sequence of $3-d$ vectors which can be obtained by using linear regression to fit the vector functional form using a linear model\cite{Rencher}.
+$${\bf y}(t) = {\bf M(}t)\, {\bf \beta}$$where the {\it design matrix} ${\bf M}(t) = [{\bf X},{\bf X}t,{\bf X}t^2,\hdots,{\bf X}t^{n-1}]^T$ is the 3-by-3n unit matrix (in the case of 3-d vector polynomials ${\bf X}  = {\bf I}_3$ and $\bf \beta$ is a 3n-by-1 vector of {\it regression parameters}. The Least Squares estimate of the regression parameters given $i=1,2,\hdots, N$ data points is 
+$$\hat{\beta} = \bigg[\sum_{i=1}^N\, {\bf M}^T(t_i) {\bf M}((t_i)\bigg]^{-1}\bigg[\sum_{i=1}^N\, {\bf M}^T(t_i) {\bf y}((t_i)\bigg]$$ The above method can be used to fit vector polynomials to sensor positions and line-of-sight vectors so that approximations can be made to the vector as well as its first and second derivatives with respect to time which are needed to apply Laplace's method.\\ 
+
+Let us assume that we have at least three line-of-sight unit vector measured from the moving sensor (following the description in \cite{Bate})
+\begin{align*}
+{\bf L}_i = 
+\begin{bmatrix}
+L_I\\
+L_J\\
+L_K\\
+\end{bmatrix}
+= 
+\begin{bmatrix}
+\sin(\theta_i)\cos(\phi_i)\\
+\sin(\theta_i)\sin(\phi_i)\\
+\cos(\theta_i)\\
+\end{bmatrix} = {\bf M_{UV}}(i) \quad i = 1,2,\hdots,N  \quad\hbox{assume $N\ge3$}
+\end{align*}
+Laplace's technique involves writing the slant range vector $\vec{\bf \rho} = \rho{\bf L}$ in terms of the line-of-site vector from the sensor to the target and then adding the sensor location with respect to the origin at the center of the earth $\bf R$ to obtain the vector location of the target with respect to the origin in the form
+${\bf r} = \rho{\bf L} + {\bf R}$ and then using the polynomial fits to $\vec{L}$ and $\vec{R}$ and their derivatives to express the first and second derivatives of $\vec{r}$ in the form 
+\begin{align*}
+{\bf r} &= \rho{\bf L} + {\bf R}\\
+\dot{\bf r} &= \dot\rho{\bf L} + \rho\dot{\bf L} + \dot{\bf R}\\
+\ddot{\bf r} &= 2\dot\rho \dot{\bf L} + \ddot\rho{\bf L}+ \rho\ddot{\bf L} + \ddot{\bf R}\\
+\end{align*}
+At this point Laplace's method uses an approximation for $\ddot{\bf r}$ and Newton's 2nd Law to insert the $1/r^2$ approximate gravitational force law into the above system so that it can be written in the form of a linear system which can be used to set up an 8th order polynomial to solve for the distance of the target to the origin. After that equation is solved numerically, then the result can be back-substituted into the vector relationships to estimate the targets position and velocity at a particular time. That becomes the initial estimate for the least squares fitting method to use to start the iterations. This state vector can be transformed into Kepler classical elements or any other set of elements desired. 
+

@@ -1,0 +1,38 @@
+\section{Application of the second order method}
+
+The second order method involves taking the first and second derivatives of Eq.\eqref{eqnChiSq} which we write for a general vector of observations and predictions as:
+
+\begin{align*}\chi^2 = {1\over2}\sum_{i=1}^N\, [\alpha(t_i) - \talph_i]^T \hbox{Cov}_i^{-1}[\alpha(t_i) - \talph_i]\end{align*}
+
+Under the assumption that the covariance matrices are symmetric we can compute the first derivative as
+$${\partial \chi^2\over \partial z_j}  = \sum_{i=1}^N\, \bigg[{\partial\alpha(t_i)\over\partial z_j}\bigg]^T \hbox{Cov}_i^{-1}[\alpha(t_i) - \talph_i] \quad j =1,2,\hdots, m,$$
+
+Proceeding to the second derivatives of Eq.\eqref{eqnChiSq} we obtain:
+$${\partial^2 \chi^2\over \partial z_j\partial z_k}  = 
+\sum_{i=1}^N\, \bigg[{\partial^2\alpha(t_i)\over\partial z_j\partial z_k}\bigg]^T \hbox{Cov}_i^{-1}[\alpha(t_i) - \talph_i]  + \bigg[{\partial\alpha(t_i)\over\partial z_j}\bigg]^T \hbox{Cov}_i^{-1}\bigg[{\partial\alpha(t_i)\over\partial z_j}\bigg]
+\quad j,k  =1,2,\hdots, m.$$
+
+We define the Jacobian matrix, $\bf J$ corresponding to the partial derivatives appearing by 
+$$J_{ij} = \bigg[{\partial\alpha(t_i)\over\partial z_j}\bigg]$$and the Hessian matrix, $\bf H$, of mixed partial derivatives as 
+$$H_{jk}(t_i) = {\partial^2\alpha(t_i)\over\partial z_j\partial z_k}$$
+
+With $\bf J$ and $\bf H$ defined in this manner the first and second derivatives can be written as 
+$${\partial \chi^2\over \partial z_j}  = \sum_{i=1}^N\, J_{ji}^T \hbox{Cov}_i^{-1}[\alpha(t_i) - \talph_i] \quad j =1,2,\hdots, m,$$
+
+and 
+
+$${\partial^2 \chi^2\over \partial z_j\partial z_k}  = 
+\sum_{i=1}^N\, \bigg[H_{jk}(t_i)^T \hbox{Cov}_i^{-1}[\alpha(t_i) - \talph_i]  + J_{ji}^T \hbox{Cov}_i^{-1}J_{ik} \bigg] \quad j,k  =1,2,\hdots, m.$$
+
+The idea of the second order method is to expand the gradient of $\chi^2$ into a Taylor series and set the resulting components each to 0 and apply Newton-Raphson iterations to the result as follows: 
+$${\partial \chi^2\over \partial z_j} \approx {\partial \chi^2\over \partial z_j} \biggl|_{\hat{Z}} + \sum_{k=1}^N  {\partial^2 \chi^2\over \partial z_j \partial z_k} \biggl|_{\hat{Z}}\,\delta z_k = 0,\quad j =1,2,\hdots, m,$$
+which leads a linear system for the increment vector $\delta z_k$
+$$\delta z_k =  -\sum_{j=1}^m\bigg[\sum_{i=1}^N\, \big[H_{jk}(t_i)^T \hbox{Cov}_i^{-1}[\alpha(t_i) - \talph_i]  + J_{ji}^T \hbox{Cov}_i^{-1}J_{ik} \big] \bigg]^{-1} \bigg[ \sum_{i=1}^N\, J_{ji}^T \hbox{Cov}_i^{-1}[\alpha(t_i) - \talph_i]  \biggl|_{\hat{Z}}\bigg]$$
+
+The above system can be interpreted using matrix multiplication. Let $\bf V$ be the vector in the parameter space with components
+$$V_j = \sum_{i=1}^N\, J_{ji}^T \hbox{Cov}_i^{-1}[\alpha(t_i) - \talph_i] $$ and $\bf M$ the matrix in the parameter space with components
+$$M_{jk} = \sum_{i=1}^N\, \bigg[H_{jk}(t_i)^T \hbox{Cov}_i^{-1}[\alpha(t_i) - \talph_i]  + J_{ji}^T \hbox{Cov}_i^{-1}J_{ik} \bigg],$$
+Then the solution to the linear system can be written in matrix form as
+$${\bf \delta z} = - {\bf M}^{-1}{\bf V}$$
+
+
